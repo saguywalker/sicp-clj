@@ -57,6 +57,19 @@
   [rectangle] (* (horizontal-length rectangle)
                  (vertical-length rectangle)))
 
+;; natural number
+
+(def zero (fn [_ v] v))
+(def one (fn [f v] (f (zero f v))))
+(def two (fn [f v] (f (one f v))))
+
+(def incr
+  (fn [ff]
+    (fn [f v] (f (ff f v)))))
+
+(defn church-numeral->int [church-numeral]
+  (church-numeral inc 0))
+
 ;; test
 
 (make-point 2 3)
