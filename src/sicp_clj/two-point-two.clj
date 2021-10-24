@@ -63,6 +63,74 @@
          :else (+ (count-leaves (first xs))
                   (count-leaves (rest xs)))))
 
+(defn count-leaves-2
+  [xs] (reduce + 
+               0 
+               (map (fn [x] (if (list? x)
+                              (count-leaves-2 x)
+                              1)) 
+                    xs)))
+
+(defn square-tree
+  [tree] (map (fn [x] (if (list? x) (square-tree x) (* x x))) tree))
+
+(defn tree-map
+  [f tree] (map (fn [x] (if (list? x)
+                          (tree-map f x)
+                          (f x))) tree))
+
+(defn square [n] (* n n))
+
+(defn square-tree2
+  [tree] (tree-map square tree))
+
+(defn subsets
+  [s] (if (empty? s)
+        (list ())
+        (let [tail (subsets (rest s))
+              head (first s)]
+          (append tail (map #(cons head %) tail)))))
+
+(defn my-map
+  [f coll] (reduce (fn [acc x] (append acc (list (f x)))) nil coll))
+
+(defn my-append
+  [seq1 seq2] (reduce (fn [acc x] (append acc (list x))) 
+                      seq1
+                      seq2))
+(defn my-length
+  [coll] (reduce (fn [acc, _] (+ acc 1)) 0 coll))
+
+(defn horner-eval
+  [x term] (reduce (fn [acc coeff] (+ (* acc x) coeff))
+                   0 
+                   (my-reverse term)))
+
+(defn reduce-n
+  [op init seqs] (if (or (nil? (first seqs)) 
+                         (empty? (first seqs)))
+                   nil
+                    (cons (my-reverse (reduce (fn [acc, x] (cons x acc)) 
+                                              init 
+                                              (map first seqs)))
+                         (reduce-n op init (map rest seqs)))))
+
+;; matrix - vector
+
+(defn dot-product
+  [v w] (reduce + 0 (map * v w)))
+
+(defn matrix-*-vector
+  [m v] (map (fn [mi] (dot-product mi v))
+              m))
+
+(defn transpose
+  [m] (reduce-n cons nil m))
+
+(defn matrix-*-matrix
+  [m n] (let [cols (transpose n)]
+          (map #(matrix-*-vector cols %) m)))
+
 ;; test
 
 (last-pair (list 1 3 5))
