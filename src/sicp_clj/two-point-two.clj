@@ -115,6 +115,9 @@
                                               (map first seqs)))
                          (reduce-n op init (map rest seqs)))))
 
+(defn flatmap
+  [f coll] (reduce append nil (map f coll)))
+
 ;; matrix - vector
 
 (defn dot-product
@@ -130,6 +133,25 @@
 (defn matrix-*-matrix
   [m n] (let [cols (transpose n)]
           (map #(matrix-*-vector cols %) m)))
+
+(defn unique-pairs
+  [n] (flatmap (fn [i] (map (fn [j] (list j i)) 
+                        (range 1 i)))
+               (range 1 (+ n 1))))
+
+(defn unique-triple-pairs
+  [n] (mapcat (fn [i] 
+                 (mapcat (fn [j] 
+                            (map (fn [k] (list k j i)) 
+                                 (range 1 j)))
+                          (range 1 i))) 
+                 (range 1 (+ n 1))))
+
+(defn valid-sum?
+  [triple, n] (= n (reduce + 0 triple)))
+
+(defn valid-unique-triple-pairs
+  [n, s] (filter #(valid-sum? % s) (unique-triple-pairs n)))
 
 ;; test
 
