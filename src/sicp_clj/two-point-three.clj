@@ -1,4 +1,4 @@
-(ns sicp-clj.two-point-tree)
+(ns sicp-clj.two-point-three)
 
 (defn memq
   [item x] (cond
@@ -80,3 +80,70 @@
                               (make-product e (make-exponentiation b (- e 1)))
                               (deriv b v)))
     :else (println "unknown expression type - DERIV" exp)))
+
+;; sets as ordered lists
+
+(defn element-of-set? [x s]
+  (cond
+    (or (nil? s) (empty? s)) false
+    (= x (first s)) true
+    (< x (first s)) false
+    :else (element-of-set? x (rest s))))
+
+;; for unordered sets
+;;(defn adjoin-set [x s]
+;;  (if (element-of-set? x s)
+;;    s
+;;    (cons x s)))
+
+(defn adjoin-set [x s]
+  (if (empty? s)
+    (list x)
+    (let [head (first s)
+          tail (rest s)]
+      (cond
+        (= x head) s
+        (< x head) (cons x s)
+        (> x head) (cons head (adjoin-set x tail))))))
+
+(defn intersection-set [set1 set2]
+  (if (or (empty? set1) (empty? set2))
+    '()
+    (let [x1 (first set1)
+          x2 (first set2)]
+      (cond
+        (= x1 x2) (cons x1 (intersection-set (rest set1) (rest set2)))
+        (< x1 x2) (intersection-set (rest set1) set2)
+        (< x2 x1) (intersection-set set1 (rest set2))))))
+
+;; for unordered sets
+;;(defn intersection-set [set1 set2]
+;;  (cond
+;;    (or (or (nil? set1) (empty? set1)) (or (nil? set2) (empty? set2))) '()
+;;    (element-of-set? (first set1) set2) (cons (first set1)
+;;                                              (intersection-set (rest set1)
+;;                                                                set2))
+;;    :else (intersection-set (rest set1) set2)))
+
+;; O(n)
+(defn union-set [set1 set2]
+  (cond
+    (empty? set1) set2
+    (empty? set2) set1
+    (= (first set1) (first set2)) (cons (first set1)
+                                        (union-set (rest set1) (rest set2)))
+    (< (first set1) (first set2)) (cons (first set1)
+                                        (union-set (rest set1) set2))
+    :else (cons (first set2) 
+                (union-set set1 (rest set2)))))
+
+;; for unirdered sets
+;;(defn union-set [set1 set2]
+;;  (cond
+;;    (or (nil? set1) (empty? set1)) set2
+;;    (or (nil? set2) (empty? set2)) set1
+;;    (element-of-set? (first set1) set2) (union-set (rest set1) set2)
+;;    :else (cons (first set1) (union-set (rest set1) set2))))
+
+
+
