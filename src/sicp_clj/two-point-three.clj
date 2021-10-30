@@ -26,6 +26,7 @@
     (=number? a1 0) a2
     (=number? a2 0) a1
     (and (number? a1) (number? a2)) (+ a1 a2)
+    (list? a2) (apply list '+ a1 a2)
     :else (list '+ a1 a2)))
 
 (defn make-product [m1 m2]
@@ -34,17 +35,36 @@
     (=number? m1 1) m2
     (=number? m2 1) m1
     (and (number? m1) (number? m2)) (* m1 m2)
+    (list? m2) (apply list '* m1 m2) 
     :else (list '* m1 m2)))
+
+(defn make-exponentiation [b e]
+  (cond
+    (=number? e 0) 1
+    (=number? e 1) b
+    :else (list '** b e)))
 
 (defn sum? [x] (and (list? x) (= (first x) '+)))
 (defn addend [s] (first (rest s)))
-(defn augend [s] (first (rest (rest s))))
+(defn augend [s] (let [rest-terms (rest (rest (rest s)))
+                       second-term (first (rest (rest s)))]
+                   (if (empty? rest-terms)
+                     second-term
+                     (make-sum second-term rest-terms))))
 
 (defn product? [x] (and (list? x) (= (first x) '*)))
 (defn multiplier [p] (first (rest p)))
-(defn multiplicand [p] (first (rest (rest p))))
+(defn multiplicand [p] (let [rest-terms (rest (rest (rest p)))
+                       second-term (first (rest (rest p)))]
+                   (if (empty? rest-terms)
+                     second-term
+                     (make-product second-term rest-terms))))
 
-(defn deriv [exp v]
+(defn exponentiation? [x] (and (list? x) (= (first x) '**)))
+(defn base [e] (first (rest e)))
+(defn exponent [e] (first (rest (rest e))))
+
+(defn ^:dynamic deriv [exp v]
   (cond
     (number? exp) 0
     (variable? exp) (if (same-variable? exp v) 1 0)
@@ -54,4 +74,9 @@
                                            (deriv (multiplicand exp) v))
                              (make-product (deriv (multiplier exp) v)
                                            (multiplicand exp)))
+    (exponentiation? exp) (let [b (base exp)
+                                e (exponent exp)]
+                            (make-product 
+                              (make-product e (make-exponentiation b (- e 1)))
+                              (deriv b v)))
     :else (println "unknown expression type - DERIV" exp)))
