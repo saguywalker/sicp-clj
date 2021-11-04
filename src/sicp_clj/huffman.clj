@@ -66,9 +66,9 @@
   (if (leaf? tree)
     (if (= symb (symbol-leaf tree))
       '()
-      (throw (Throwable. "unknown symbol")))
+      (throw (Throwable. (str "unknown symbol " symb " for tree " tree))))
     (let [left (left-branch tree)]
-      (if (element-of-set? symb left)
+      (if (element-of-set? symb (symbols left))
         (cons 0 (encode-symbol symb left))
         (cons 1 (encode-symbol symb (right-branch tree)))))))
 
