@@ -137,7 +137,7 @@
     :else (cons (first set2) 
                 (union-set set1 (rest set2)))))
 
-;; for unirdered sets
+;; for unordered sets
 ;;(defn union-set [set1 set2]
 ;;  (cond
 ;;    (or (nil? set1) (empty? set1)) set2

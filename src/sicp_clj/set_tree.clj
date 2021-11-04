@@ -51,9 +51,6 @@
 (defn ^:dynamic list->tree [elements]
   (first (partial-tree elements (count elements)))) ;; O(n) for counting
 
-;; (defn union-set [set1 set2] '())
-
-;; (defn intersection-set [set1 set2] '())
 
 
 
